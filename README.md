@@ -32,3 +32,9 @@ Tento projekt je moderná webová aplikácia postavená na Next.js s integrovan�
 1. Nainštaluj závislosti:
    ```bash
    npm install
+
+2. použite prikazy
+npm install -D @tailwindcss/typography
+npm install yet-another-react-lightbox
+npm install @portabletext/react
+npm install @portabletext/types

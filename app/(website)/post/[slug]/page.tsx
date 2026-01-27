@@ -1,7 +1,7 @@
-import { client } from '../../lib/sanity';
+import { client } from '../../../lib/sanity';
 import Link from 'next/link';
 import { PortableText } from '@portabletext/react';
-import GallerySection from "../../components/GallerySection";
+import GallerySection from "../../../components/GallerySection";
 
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,6 +32,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+type SocialLink = {
+  platform: string;
+  url: string;
+};
+
+
 // --- HLAVNÁ STRÁNKA DETAILU ---
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -48,12 +54,23 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     tags,
     content,
     externalLink,
-    authorEmail,
+
     seo,
     "categoryName": category->title,
     "imageUrl": mainImage.asset->url,
     "gallery": gallery[].asset->url,
-    "fileUrl": fileUpload.asset->url
+    "fileUrl": fileUpload.asset->url,
+    "author": author-> {
+    name,
+    bio,
+    "imageUrl": image.asset->url,
+    email,
+    phone,
+    socials[] {
+      platform,
+      url
+    }
+  }
   }`, { slug });
 
   if (!post) return (
@@ -183,14 +200,50 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   </span>
                 ))}
               </div>
-              {post.authorEmail && (
-                  <div className="flex items-center gap-2 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                      {post.authorEmail[0].toUpperCase()}
+              {/* VIZITKA AUTORA */}
+                {post.author && (
+                  <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100 mb-10">
+                    {post.author.imageUrl && (
+                      <img 
+                        src={post.author.imageUrl} 
+                        alt={post.author.name} 
+                        className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
+                      />
+                    )}
+                    <div className="flex-1 text-center md:text-left">
+                      <h3 className="text-xl font-bold text-slate-900">{post.author.name}</h3>
+                      <p className="text-slate-500 text-sm mb-3 leading-relaxed">{post.author.bio}</p>
+                      
+                      <div className="flex flex-wrap justify-center md:justify-start gap-4 text-xs items-center">
+                        {/* EMAIL */}
+                        {post.author.email && (
+                          <a href={`mailto:${post.author.email}`} className="text-blue-600 font-bold hover:underline flex items-center gap-1">
+                            <span>✉</span> {post.author.email}
+                          </a>
+                        )}
+
+                        {/* TELEFÓN - PRIDANÉ TU */}
+                        {post.author.phone && (
+                          <a href={`tel:${post.author.phone}`} className="text-slate-600 font-bold hover:underline flex items-center gap-1 border-l border-slate-200 pl-4">
+                            <span>📞</span> {post.author.phone}
+                          </a>
+                        )}
+                        
+                        {/* SOCIÁLNE SIETE */}
+                        <div className="flex gap-2 ml-auto">
+                          {post.author.socials?.map((social: SocialLink, idx: number) => (
+                            <a 
+                              key={idx} 
+                              href={social.url} 
+                              target="_blank" 
+                              className="bg-white px-3 py-1 rounded-full border border-slate-200 hover:border-blue-400 transition-colors"
+                            >
+                              {social.platform}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-sm text-slate-600">
-                      Lektor: <a href={`mailto:${post.authorEmail}`} className="font-bold hover:text-blue-600">{post.authorEmail}</a>
-                    </span>
                   </div>
                 )}
             </div>

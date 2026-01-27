@@ -1,7 +1,7 @@
 import { Rule } from 'sanity';
 export const postType = {
   name: 'post',
-  title: 'Príspevky',
+  title: 'Kurzy',
   type: 'document',
   fieldsets: [
     {
@@ -26,7 +26,7 @@ export const postType = {
       name: 'rating',
       type: 'number',
       title: 'Hodnotenie',
-      validation: (rule: Rule) => rule.min(1).max(5).precision(1)
+      
     },
     { name: 'isFeatured', type: 'boolean', title: 'Je to novinka', initialValue: false },
 
@@ -57,6 +57,15 @@ export const postType = {
       to: [{ type: 'category' }] 
     },
 
+    {
+      name: 'author',
+      title: 'Autor príspevku',
+      type: 'reference',
+      to: [{ type: 'author' }], 
+     // validation: (rule: Rule) => rule.required(), // Voliteľné: autor bude povinný
+      
+    },
+
     // --- BOHATÝ OBSAH (Rich Text) ---
     {
       name: 'content',
@@ -73,6 +82,8 @@ export const postType = {
         }
       ]
     },
+
+    
 
     // --- ORGANIZÁCIA (Tagy a Listy) ---
     {

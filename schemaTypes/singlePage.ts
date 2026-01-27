@@ -1,9 +1,18 @@
 export default {
-  name: 'aboutPage',
+  name: 'singlePage',
   type: 'document',
-  title: 'O nás',
+  title: 'Stránky',
   fields: [
     { name: 'title', type: 'string', title: 'Nadpis stránky' },
+        {
+      name: 'slug',
+      type: 'slug',
+      title: 'URL adresa',
+      options: {
+        source: 'title', 
+        maxLength: 96,
+      },
+    },
     {
       name: 'sections',
       type: 'array',

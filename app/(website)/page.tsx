@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { client } from './lib/sanity';
+import { client } from '../lib/sanity';
 export const revalidate = 10; // Stránka sa skontroluje každých 10 sekúnd
 
 interface Post {

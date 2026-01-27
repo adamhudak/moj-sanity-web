@@ -1,5 +1,8 @@
 import { postType } from './postType'
 import { categoryType } from './categoryType'
-import aboutPage from './aboutPage'
+import  singlePage  from './singlePage'
+import { authorType } from './author'
+import { settingsType } from './settings'
+import systemPage  from './systemPage'
 
-export const schemaTypes = [postType, categoryType, aboutPage]
+export const schemaTypes = [systemPage, postType, categoryType, singlePage, authorType, settingsType]
