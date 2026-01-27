@@ -16,7 +16,7 @@ export default async function Home() {
     price,
     "slug": slug.current,
     "categoryName": category->title,
-    "imageUrl": image.asset->url
+    "imageUrl": mainImage.asset->url
   }`);
 
   return (

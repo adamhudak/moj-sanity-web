@@ -29,7 +29,9 @@ export default function RootLayout({
     <html lang="sk">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50`}
+        suppressHydrationWarning={true} 
       >
+        
         {/* Navigácia sa zobrazí iba ak NIE SME v studiu */}
         {!isStudio && (
           <header className="sticky top-0 z-50 bg-white/100 backdrop-blur-md border-b border-slate-100">

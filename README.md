@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Môj Web Projekt (Next.js + Sanity)
 
-## Getting Started
+Tento projekt je moderná webová aplikácia postavená na Next.js s integrovaným bezhlavým CMS (Sanity) pre jednoduchú správu obsahu.
 
-First, run the development server:
+## 🛠 Použité technológie
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Frontend
+- **Next.js 15** (App Router, React 19)
+- **Tailwind CSS v4** – Moderný styling s využitím nových CSS-native funkcií.
+- **TypeScript** – Pre bezpečný a čitateľný kód.
+- **Lucide React** – Sada elegantných ikon.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Content Management (CMS)
+- **Sanity.io** – Flexibilné rozhranie pre správu článkov, kurzov a SEO.
+- **GROQ** – Dopytovací jazyk na získavanie dát zo Sanity.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Nainštalované balíčky (Kľúčové dependency)
+- `@portabletext/react` – Na vykresľovanie bohatého textu zo Sanity.
+- `@tailwindcss/typography` – Plugin pre automatický styling článkov (trieda `prose`).
+- `yet-another-react-lightbox` – Interaktívna galéria obrázkov.
+- `next-sanity` – Oficiálny toolkit pre prepojenie Next.js a Sanity.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Funkcie projektu
+- ✅ **Dynamický Blog/Kurzy** – Automatické generovanie stránok z CMS.
+- ✅ **Hierarchické kategórie a tagy** – Prepracovaná organizácia obsahu.
+- ✅ **Kompletné SEO** – Dynamické Meta titulky, popisy a podpora pre SEO/Social zdieľacie obrázky.
+- ✅ **Stavy príspevkov** – Vizuálne odlíšenie: *Aktuálne*, *Pripravujeme* a *Skončilo*.
+- ✅ **Responzívny dizajn** – Optimalizované pre mobily aj desktopy.
 
-## Learn More
+## 🚀 Spustenie projektu
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Nainštaluj závislosti:
+   ```bash
+   npm install
