@@ -5,6 +5,7 @@ export const settingsType = {
   // 1. DEFINUJEME SKUPINY (TABY)
   groups: [
     { name: 'identity', title: 'Identita' },
+    { name: 'navigation', title: 'Menu' },
     { name: 'contact', title: 'Kontaktné údaje' },
     { name: 'billing', title: 'Fakturácia' },
     { name: 'social', title: 'Sociálne siete' },
@@ -25,6 +26,62 @@ export const settingsType = {
       fields: [
         { name: 'logoWhite', type: 'image', title: 'Logo (Biele/Svetlé)' },
         { name: 'logoDark', type: 'image', title: 'Logo (Tmavé)' },
+      ]
+    },
+
+    {
+      name: 'menuItems',
+      title: 'Menu v hlavičke (Header)',
+      type: 'array',
+      group: 'navigation', // Priradenie k novému tabu
+      of: [
+        {
+          type: 'object',
+          title: 'Položka menu',
+          fields: [
+            { name: 'label', title: 'Názov v menu', type: 'string' },
+            { 
+              name: 'link', 
+              title: 'Cesta (Slug)', 
+              type: 'reference', 
+              to: [{ type: 'singlePage' }, { type: 'systemPage' }] 
+            },
+          ],
+          preview: {
+            select: {
+              title: 'label',
+              subtitle: 'link.slug.current'
+            },
+            prepare({ title, subtitle }: { title: string; subtitle: string }) {
+              return {
+                title: title || 'Bez názvu',
+                subtitle: subtitle ? `/${subtitle}` : 'Odkaz nenastavený'
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      name: 'footerMenuItems',
+      title: 'Menu v pätičke (Footer)',
+      type: 'array',
+      group: 'navigation',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'label', title: 'Názov', type: 'string' },
+            { name: 'link', type: 'reference', to: [{ type: 'singlePage' }, { type: 'systemPage' }] },
+          ],
+          preview: {
+            select: { title: 'label', subtitle: 'link.slug.current' },
+            prepare({ title, subtitle }: { title: string; subtitle: string }) {
+              return { title, subtitle: subtitle ? `/${subtitle}` : 'Odkaz nenastavený' }
+            }
+          }
+        }
       ]
     },
 

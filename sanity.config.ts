@@ -27,6 +27,7 @@ export default defineConfig({
                   .documentId('settings')
                   .title('Všeobecné nastavenia')
               ),
+            
 
             S.divider(),
             

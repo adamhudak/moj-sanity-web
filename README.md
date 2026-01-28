@@ -34,6 +34,7 @@ Tento projekt je moderná webová aplikácia postavená na Next.js s integrovan�
    npm install
 
 2. použite prikazy
+npm install next-sanity @portabletext/react
 npm install -D @tailwindcss/typography
 npm install yet-another-react-lightbox
 npm install @portabletext/react

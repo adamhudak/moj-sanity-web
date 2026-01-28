@@ -2,7 +2,14 @@ import { client } from '../../lib/sanity';
 import { PortableText } from "@portabletext/react";
 import { notFound } from "next/navigation";
 import type { PortableTextBlock } from "@portabletext/types";
+import ContactForm from "../../components/ContactForm";
 export const dynamic = 'force-dynamic';
+
+interface ContactSection {
+  _type: 'contactSection';
+  title?: string;
+  description?: string;
+}
 
 // --- TYPY PRE TVOJE BLOKY (Flexible Content) ---
 interface HeroSection {
@@ -17,7 +24,7 @@ interface FaqSection {
 }
 
 // Sem neskôr len pripíšeš: | GallerySection | ContactSection
-type Section = HeroSection | FaqSection;
+type Section = HeroSection | FaqSection | ContactSection;
 
 interface PageData {
   _type: 'singlePage' | 'systemPage';
@@ -38,7 +45,9 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
       _type,
       text,
       "imageUrl": image.asset->url,
-      questions[] { question, answer }
+      questions[] { question, answer },
+      title,
+      description
     }
   }`;
 
@@ -94,6 +103,23 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
                       </div>
                     ))}
                   </div>
+                </section>
+              );
+            }
+
+            // 4. PRIDANÝ BLOK: Kontakt
+            if (section._type === 'contactSection') {
+              return (
+                <section key={index} className="max-w-3xl mx-auto w-full bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-100">
+                  <div className="text-center mb-10">
+                    <h2 className="text-3xl font-bold text-slate-600 mb-4">{section.title || 'Napíšte nám'}</h2>
+                    {section.description && (
+                      <p className="text-slate-600">{section.description}</p>
+                    )}
+                  </div>
+                  
+                  {/* Tu sa vykreslí tvoj formulár */}
+                  <ContactForm />
                 </section>
               );
             }

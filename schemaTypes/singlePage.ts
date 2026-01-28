@@ -44,7 +44,26 @@ export default {
               }]
             }
           ]
-        }
+        },
+        {
+          type: 'object',
+          name: 'contactSection',
+          title: 'Kontaktný formulár',
+          fields: [
+            { 
+              name: 'title', 
+              type: 'string', 
+              title: 'Nadpis sekcie', 
+              initialValue: 'Napíšte nám' 
+            },
+            { 
+              name: 'description', 
+              type: 'text', 
+              title: 'Krátky text nad formulárom' 
+            }
+          ],
+          
+        },
       ]
     }
   ]
