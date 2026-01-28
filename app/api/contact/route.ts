@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from 'next-sanity';
 import { NextResponse } from 'next/server';
 
