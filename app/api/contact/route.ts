@@ -22,19 +22,19 @@ const writeClient = createClient({
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
-    // Serializácia podľa zadania: formType + zvyšok do JSON stringu
-    const { formType = 'contact', ...restOfData } = body;
+    const { name, email, message } = body;
 
     const result = await writeClient.create({
       _type: 'contactForm',
-      formType: formType,
-      formData: JSON.stringify(restOfData, null, 2), // Serializované dáta
+      name,         // uloží do poľa 'name'
+      email,        // uloží do poľa 'email'
+      message,      // uloží do poľa 'message'
+      // Ručne pridáme dátum aj sem, aby sme mali istotu
+      submittedAt: new Date().toISOString(), 
     });
 
-    return NextResponse.json({ success: true, id: result._id });
+    return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Chyba pri zápise do Sanity:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

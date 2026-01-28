@@ -1,17 +1,47 @@
-export const contactFormType = {
+import { defineField, defineType } from 'sanity';
+
+export const contactFormType = defineType({
   name: 'contactForm',
   title: 'Prijaté správy',
   type: 'document',
-  readOnly: true, // Admin by nemal správy prepisovať
   fields: [
-    { name: 'name', title: 'Meno', type: 'string' },
-    { name: 'email', title: 'Email', type: 'string' },
-    { name: 'message', title: 'Správa', type: 'text' },
-    { 
-      name: 'submittedAt', 
-      title: 'Odoslané dňa', 
-      type: 'datetime', 
-      initialValue: () => new Date().toISOString() 
+    defineField({
+      name: 'name',
+      title: 'Meno',
+      type: 'string',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'email',
+      title: 'Email',
+      type: 'string',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'message',
+      title: 'Správa',
+      type: 'text',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'submittedAt',
+      title: 'Odoslané dňa',
+      type: 'datetime',
+      // Automaticky nastaví aktuálny dátum a čas
+      initialValue: () => new Date().toISOString(),
+      readOnly: true,
+    }),
+  ],
+  preview: {
+    select: {
+      title: 'name',
+      subtitle: 'submittedAt',
     },
-  ]
-}
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Neznámy odosielateľ',
+        subtitle: subtitle ? new Date(subtitle).toLocaleString('sk-SK') : 'Bez dátumu',
+      };
+    },
+  },
+});
