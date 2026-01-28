@@ -4,8 +4,9 @@ import { NextResponse } from 'next/server';
 const writeClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  token: process.env.SANITY_API_WRITE_TOKEN, // Potrebuješ token s právami zápisu!
+  token: process.env.SANITY_API_WRITE_TOKEN,
   useCdn: false,
+  apiVersion: '2026-01-01',
 });
 
 export async function POST(req: Request) {

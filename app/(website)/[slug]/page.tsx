@@ -71,7 +71,7 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
   return (
     <main className="min-h-screen py-16 px-6">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-5xl font-black mb-20 text-center">{data.title}</h1>
+        <h1 className="text-5xl text-slate-600 mb-10 text-center">{data.title}</h1>
         
         <div className="flex flex-col gap-24">
           {data.sections?.map((section, index) => {
