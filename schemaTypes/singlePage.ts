@@ -2,21 +2,33 @@ export default {
   name: 'singlePage',
   type: 'document',
   title: 'Stránky',
+  // 1. Definujeme skupiny pre lepšiu prehľadnosť
+  groups: [
+    { name: 'content', title: 'Obsah stránky' },
+    { name: 'seo', title: 'SEO nastavenia' },
+  ],
   fields: [
-    { name: 'title', type: 'string', title: 'Nadpis stránky' },
-        {
+    { 
+      name: 'title', 
+      type: 'string', 
+      title: 'Nadpis stránky',
+      group: 'content' // Priradíme do skupiny Obsah
+    },
+    {
       name: 'slug',
       type: 'slug',
       title: 'URL adresa',
       options: {
-        source: 'title', 
+        source: 'title',
         maxLength: 96,
       },
+      group: 'content'
     },
     {
       name: 'sections',
       type: 'array',
       title: 'Sekcie stránky',
+      group: 'content',
       of: [
         {
           type: 'object',
@@ -62,9 +74,30 @@ export default {
               title: 'Krátky text nad formulárom' 
             }
           ],
-          
         },
       ]
+    },
+    // --- SEO POLIA ---
+    {
+      name: 'seoTitle',
+      type: 'string',
+      title: 'SEO Nadpis (Meta Title)',
+      description: 'Zobrazuje sa v záložke prehliadača (ideálne do 60 znakov).',
+      group: 'seo' // Priradíme do skupiny SEO
+    },
+    {
+      name: 'seoDescription',
+      type: 'text',
+      title: 'SEO Popis (Meta Description)',
+      description: 'Krátky popis pre Google (ideálne 150-160 znakov).',
+      group: 'seo'
+    },
+    {
+      name: 'seoImage',
+      type: 'image',
+      title: 'SEO Obrázok',
+      description: 'Obrázok, ktorý sa zobrazí pri zdieľaní na Facebooku/Instagrame.',
+      group: 'seo'
     }
   ]
 }
