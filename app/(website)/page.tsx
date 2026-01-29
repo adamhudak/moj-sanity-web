@@ -20,10 +20,10 @@ export default async function Home() {
   }`);
 
   return (
-    <main className="min-h-screen bg-slate-50 py-16 px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-16 px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header sekcia */}
-        <header className="mb-16 text-center">
+        <div className="mb-16 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
             Prémiová Ponuka
           </h1>
@@ -31,7 +31,7 @@ export default async function Home() {
             Objavte naše najnovšie príspevky a produkty spravované priamo cez Sanity CMS.
           </p>
           <div className="h-1 w-20 bg-blue-600 mx-auto mt-6 rounded-full" />
-        </header>
+        </div>
 
         {/* Mriežka s kartami */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -85,6 +85,6 @@ export default async function Home() {
           ))}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

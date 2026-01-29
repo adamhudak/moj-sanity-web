@@ -62,6 +62,21 @@ export default {
           name: 'contactSection',
           title: 'Kontaktný formulár',
           fields: [
+
+             {
+              name: 'layout',
+              title: 'Typ rozloženia (Šablóna)',
+              type: 'string',
+              initialValue: 'standard',
+              options: {
+                list: [
+                  { title: 'L1: Formulár na stred', value: 'standard' },
+                  { title: 'L2: Mapa vľavo + Formulár vpravo', value: 'withMap' },
+                ],
+                layout: 'radio', 
+              },
+              
+            },
             { 
               name: 'title', 
               type: 'string', 
@@ -72,11 +87,15 @@ export default {
               name: 'description', 
               type: 'text', 
               title: 'Krátky text nad formulárom' 
-            }
+            },
+           
+
           ],
         },
       ]
     },
+
+    
     // --- SEO POLIA ---
     {
       name: 'seoTitle',

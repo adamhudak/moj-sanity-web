@@ -80,7 +80,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   );
 
   return (
-    <main className="min-h-screen bg-slate-50 py-12 px-6">
       <div className="max-w-3xl mx-auto">
         
         {/* Navigácia a Status */}
@@ -103,7 +102,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             )}
         </div>
 
-        <article className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100">
+        <div className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100">
           
           {/* HLAVNÝ OBRÁZOK */}
           <div className="relative w-full h-[200px]">
@@ -252,8 +251,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               Prihlásiť sa na {post.categoryName || 'kurz'}
             </button>
           </div>
-        </article>
+        </div>
       </div>
-    </main>
   );
 }

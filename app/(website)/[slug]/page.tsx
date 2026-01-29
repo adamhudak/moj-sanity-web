@@ -12,6 +12,7 @@ interface ContactSection {
   _type: 'contactSection';
   title?: string;
   description?: string;
+  layout?: 'standard' | 'withMap';
 }
 
 interface HeroSection {
@@ -97,8 +98,10 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
       "imageUrl": image.asset->url,
       questions[] { question, answer },
       title,
-      description
-    }
+      description,
+      layout 
+    },
+    
   }`;
 
   const data: PageData | null = await client.fetch(query, { slug });
@@ -108,21 +111,18 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
   // ŠABLÓNA 1: TEXTOVÁ (GDPR, atď.)
   if (data._type === 'systemPage') {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
-        <article className="prose prose-lg prose-slate max-w-none">
+      <div className="max-w-4xl mx-auto px-6 py-20">
+        <div className="prose prose-lg prose-slate max-w-none">
           <h1 className="text-4xl font-bold mb-10">{data.title}</h1>
           <PortableText value={data.content || []} />
-        </article>
-      </main>
+        </div>
+      </div>
     );
   }
 
   // ŠABLÓNA 2: FLEXIBILNÁ
   return (
-    <main className="min-h-screen py-16 px-6">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-5xl text-slate-600 mb-10 text-center">{data.title}</h1>
-        
         <div className="flex flex-col gap-24">
           {data.sections?.map((section, index) => {
             
@@ -155,14 +155,34 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
               );
             }
 
-            if (section._type === 'contactSection') {
+   if (section._type === 'contactSection') {
+              const isWithMap = section.layout === 'withMap';
+
               return (
-                <section key={index} className="max-w-3xl mx-auto w-full bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-100">
-                  <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold text-slate-600 mb-4">{section.title || 'Napíšte nám'}</h2>
-                    {section.description && <p className="text-slate-600">{section.description}</p>}
+                <section key={index} className={`w-full ${isWithMap ? 'max-w-7xl' : 'max-w-3xl'} mx-auto`}>
+                  <div className={`grid gap-12 items-stretch ${isWithMap ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                    
+                    {isWithMap && (
+                      <div className="min-h-[400px] bg-slate-100 rounded-3xl overflow-hidden shadow-inner border border-slate-200">
+                        <iframe 
+                          src="https://www.google.com/maps/embed?pb=..." // Sem vlož tvoj skutočný embed kód
+                          className="w-full h-full border-0 grayscale contrast-125" // Tip: grayscale mapy vyzerá profi
+                          allowFullScreen
+                          loading="lazy"
+                        ></iframe>
+                      </div>
+                    )}
+
+                    <div className="bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-100 shadow-sm">
+                      <div className="mb-10 text-center md:text-left">
+                        <h2 className="text-3xl font-bold text-slate-800 mb-4">
+                          {section.title || 'Napíšte nám'}
+                        </h2>
+                        {section.description && <p className="text-slate-600">{section.description}</p>}
+                      </div>
+                      <ContactForm />
+                    </div>
                   </div>
-                  <ContactForm />
                 </section>
               );
             }
@@ -171,6 +191,6 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
           })}
         </div>
       </div>
-    </main>
+    
   );
 }

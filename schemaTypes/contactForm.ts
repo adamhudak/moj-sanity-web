@@ -31,6 +31,7 @@ export const contactFormType = defineType({
       initialValue: () => new Date().toISOString(),
       readOnly: true,
     }),
+    
   ],
   preview: {
     select: {
