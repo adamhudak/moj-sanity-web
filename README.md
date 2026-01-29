@@ -39,3 +39,5 @@ npm install -D @tailwindcss/typography
 npm install yet-another-react-lightbox
 npm install @portabletext/types
 npm install tailwindcss-animate
+na languages
+npm install @sanity/document-internationalization

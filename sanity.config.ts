@@ -1,8 +1,8 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
-// Importujeme konkrétne typy pre štruktúru
 import type { StructureBuilder, ListItemBuilder } from 'sanity/structure' 
 import { schemaTypes } from './schemaTypes'
+import { documentInternationalization } from '@sanity/document-internationalization'; 
 
 export default defineConfig({
   name: 'default',
@@ -13,30 +13,40 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-
       structure: (S: StructureBuilder) =>
         S.list()
           .title('Obsah webu')
           .items([
+            // UPRAVENÁ ČASŤ PRE NASTAVENIA
             S.listItem()
               .title('Nastavenia firmy')
               .id('settings')
               .child(
-                S.document()
+                // Namiesto jedného dokumentu otvoríme zoznam, 
+                // aby sme mohli prepínať medzi SK a EN verziou nastavení
+                S.documentList()
+                  .title('Nastavenia podľa jazyka')
                   .schemaType('settings')
-                  .documentId('settings')
-                  .title('Všeobecné nastavenia')
+                  .filter('_type == "settings" && !defined(base)')
+                  .initialValueTemplates([])
               ),
-            
 
             S.divider(),
             
             ...S.documentTypeListItems().filter(
               (listItem: ListItemBuilder) => 
-                // Pridali sme 'singlePage' do poľa zakázaných ID
                 !['settings'].includes(listItem.getId() || '')
             ),
           ]),
+    }),
+    
+    documentInternationalization({
+      supportedLanguages: [
+        {id: 'sk', title: 'Slovenčina'},
+        {id: 'en', title: 'Angličtina'}
+      ],
+      // PRIDALI SME 'settings' DO schemaTypes
+      schemaTypes: ['singlePage', 'systemPage', 'settings'], 
     }),
   ],
 

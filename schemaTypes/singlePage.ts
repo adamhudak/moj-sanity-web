@@ -8,6 +8,12 @@ export default {
     { name: 'seo', title: 'SEO nastavenia' },
   ],
   fields: [
+    {
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      // hidden: true, // Ak to nechceš vidieť v editore
+    },
     { 
       name: 'title', 
       type: 'string', 

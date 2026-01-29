@@ -3,6 +3,12 @@ export default {
   type: 'document',
   title: 'Podstránky',
   fields: [
+    {
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      // hidden: true, // Ak to nechceš vidieť v editore
+    },
     { 
       name: 'title', 
       type: 'string', 

@@ -1,25 +1,38 @@
 "use client";
 
 import Link from 'next/link';
+import { useParams } from 'next/navigation'; // Pridané pre zistenie jazyka
 
 interface FooterProps {
-  settings: any; // Pre lepšiu bezpečnosť môžeš neskôr definovať presný interface
+  settings: any;
 }
 
 export default function Footer({ settings }: FooterProps) {
-  // Ak settings ešte neprišli, zobrazíme fallback
+  const params = useParams();
+  const locale = params?.locale || 'sk'; // Získame 'sk' alebo 'en'
+
   if (!settings) {
     return (
       <footer className="p-8 text-center text-slate-400">
-        Načítavam údaje...
+        {locale === 'sk' ? 'Načítavam údaje...' : 'Loading data...'}
       </footer>
     );
   }
 
+  // Pomocník pre preklady statických labelov
+  const t = {
+    navigation: locale === 'sk' ? 'Navigácia' : 'Navigation',
+    contact: locale === 'sk' ? 'Kontakt' : 'Contact',
+    billing: locale === 'sk' ? 'Fakturačné údaje' : 'Billing Details',
+    social: locale === 'sk' ? 'Sledujte nás' : 'Follow us',
+    tagline: locale === 'sk' ? 'Vaša spoľahlivá voľba pre kvalitné služby.' : 'Your reliable choice for quality services.',
+    created: locale === 'sk' ? 'Vytvorené s láskou' : 'Created with love'
+  };
+
   return (
     <footer className="bg-white border-t border-slate-200 pt-12 pb-6 px-6">
       
-      {/* Google Mapa - zobrazí sa len ak je vyplnený embed kód */}
+      {/* Google Mapa */}
       {settings.contactDetails?.mapEmbed && (
         <div className="max-w-7xl mx-auto map-container w-full overflow-hidden rounded-xl mb-10 shadow-sm">
           <div 
@@ -39,18 +52,18 @@ export default function Footer({ settings }: FooterProps) {
             <span className="font-bold text-xl tracking-tighter">{settings.siteTitle}</span>
           )}
           <p className="text-xs text-slate-500 leading-relaxed">
-            Vaša spoľahlivá voľba pre kvalitné služby.
+            {t.tagline}
           </p>
         </div>
 
-        {/* 2. Footer Menu (Rýchle odkazy) */}
+        {/* 2. Footer Menu - OPRAVENÉ ODKAZY */}
         <div>
-          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">Navigácia</h4>
+          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.navigation}</h4>
           <ul className="flex flex-col gap-2">
             {settings.footerMenuItems?.map((item: any, index: number) => (
               <li key={index}>
                 <Link 
-                  href={`/${item.slug || ''}`} 
+                  href={`/${locale}/${item.slug || ''}`} // Pridané locale do cesty
                   className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
                 >
                   {item.label}
@@ -62,7 +75,7 @@ export default function Footer({ settings }: FooterProps) {
 
         {/* 3. Kontakt */}
         <div className="text-sm text-slate-600">
-          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">Kontakt</h4>
+          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.contact}</h4>
           <address className="not-italic space-y-2">
             <p className="whitespace-pre-line">{settings.contactDetails?.address}</p>
             <p className="font-medium text-slate-900">{settings.contactDetails?.phone}</p>
@@ -72,7 +85,7 @@ export default function Footer({ settings }: FooterProps) {
 
         {/* 4. Firemné údaje */}
         <div className="text-sm text-slate-600">
-          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">Fakturačné údaje</h4>
+          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.billing}</h4>
           <div className="space-y-1">
             <p><span className="text-slate-400">IČO:</span> {settings.billingDetails?.ic}</p>
             <p><span className="text-slate-400">DIČ:</span> {settings.billingDetails?.dic}</p>
@@ -84,37 +97,26 @@ export default function Footer({ settings }: FooterProps) {
 
         {/* 5. Sociálne siete */}
         <div className="text-sm">
-          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">Sledujte nás</h4>
+          <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.social}</h4>
           <div className="flex flex-col gap-3">
              {settings.socialLinks?.fb && (
-               <a 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                href={settings.socialLinks.fb} 
-                className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-all"
-               >
+               <a target="_blank" rel="noopener noreferrer" href={settings.socialLinks.fb} className="flex items-center gap-2 text-slate-600 hover:text-blue-600">
                  Facebook
                </a>
              )}
              {settings.socialLinks?.ig && (
-               <a 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                href={settings.socialLinks.ig} 
-                className="flex items-center gap-2 text-slate-600 hover:text-pink-600 transition-all"
-               >
+               <a target="_blank" rel="noopener noreferrer" href={settings.socialLinks.ig} className="flex items-center gap-2 text-slate-600 hover:text-pink-600">
                  Instagram
                </a>
              )}
           </div>
         </div>
-
       </div>
       
       {/* Copyright riadok */}
       <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-[10px] uppercase tracking-widest">
         <span>© {new Date().getFullYear()} {settings.siteTitle}</span>
-        <span>Vytvorené s láskou a Sanity CMS</span>
+        <span>{t.created} & Sanity CMS</span>
       </div>
     </footer>
   );
