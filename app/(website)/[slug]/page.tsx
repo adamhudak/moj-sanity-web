@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { PortableTextBlock } from "@portabletext/types";
 import ContactForm from "../../components/ContactForm";
 import { Metadata } from 'next';
+import FaqSection  from "../../components/FaqSection";
 
 export const dynamic = 'force-dynamic';
 
@@ -138,22 +139,9 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
                 </section>
               );
             }
-
-            if (section._type === 'faqSection') {
-              return (
-                <section key={index} className="max-w-3xl mx-auto w-full">
-                  <h2 className="text-3xl font-bold mb-8 text-center">Časté otázky</h2>
-                  <div className="space-y-4">
-                    {section.questions?.map((q, i) => (
-                      <div key={i} className="p-6 bg-slate-50 rounded-2xl border border-slate-200">
-                        <h3 className="font-bold text-lg text-blue-600 mb-2">? {q.question}</h3>
-                        <p className="text-slate-600">{q.answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              );
-            }
+        if (section._type === 'faqSection') {
+         return <FaqSection key={index} questions={section.questions} />;
+        }
 
    if (section._type === 'contactSection') {
               const isWithMap = section.layout === 'withMap';
