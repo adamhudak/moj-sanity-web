@@ -3,20 +3,19 @@ import Navigation from "../../components/Navigation";
 import { client } from "../../lib/sanity"; 
 import { groq } from "next-sanity";
 
+// app/(website)/[locale]/layout.tsx
+
 export default async function WebsiteLayout({
   children,
-  params, // Pridávame params sem
+  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>; // Definujeme typ pre locale
+  params: Promise<{ locale: string }>;
 }) {
-  // Získame aktuálny jazyk (sk alebo en)
   const { locale } = await params;
 
-  // Stiahneme settings a menu filtrované podľa jazyka
-  // POZNÁMKA: Predpokladám, že menuItems v Sanity odkazujú na preložené podstránky
   const settings = await client.fetch(
-    groq`*[_type == "settings"][0]{
+    groq`*[_type == "settings" && language == $locale][0]{
       ...,
       "menuItems": menuItems[]{ 
         label, 
@@ -28,19 +27,14 @@ export default async function WebsiteLayout({
       },
       "logoDark": logos.logoDark.asset->url
     }`,
-    {},
+    { locale }, // TOTO MUSÍ BYŤ DRUHÝ ARGUMENT (odstráň tie prázdne {})
     { next: { revalidate: 0 } }
   );
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation potrebuje vedieť locale, aby správne fungovali linky a prepínač */}
       <Navigation menuItems={settings?.menuItems || []} />
-      
-      <main className="flex-grow">
-        {children}
-      </main>
-      
+      <main className="flex-grow">{children}</main>
       <Footer settings={settings} />
     </div>
   );

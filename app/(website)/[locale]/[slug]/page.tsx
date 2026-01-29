@@ -8,7 +8,7 @@ import FaqSection from "../../../components/FaqSection";
 
 export const dynamic = 'force-dynamic';
 
-// --- TYPY ---
+// --- TYPY (nechávam tvoje, sú super) ---
 interface ContactSection {
   _type: 'contactSection';
   title?: string;
@@ -40,7 +40,7 @@ interface PageData {
   language: string;
 }
 
-// --- 1. SEO METADÁTA ---
+// --- 1. SEO METADÁTA (OPRAVENÉ PRE MULTI-LANG) ---
 export async function generateMetadata(props: { params: Promise<{ slug: string, locale: string }> }): Promise<Metadata> {
   const { slug, locale } = await props.params;
 
@@ -51,7 +51,8 @@ export async function generateMetadata(props: { params: Promise<{ slug: string, 
       seoDescription,
       "seoImageUrl": seoImage.asset->url
     },
-    "settings": *[_type == "settings"][0] {
+    // Pridaný filter && language == $locale, aby aj SEO názov webu bol v správnom jazyku
+    "settings": *[_type == "settings" && language == $locale][0] {
       siteTitle,
       titleFormat,
       defaultSeoDescription,
@@ -81,97 +82,89 @@ export async function generateMetadata(props: { params: Promise<{ slug: string, 
   };
 }
 
-// --- 2. HLAVNÁ KOMPONENTA STRÁNKY ---
+// --- 2. HLAVNÁ KOMPONENTA ---
 export default async function DynamicPage(props: { params: Promise<{ slug: string, locale: string }> }) {
   const { slug, locale } = await props.params;
 
-  const query = `*[(_type == "singlePage" || _type == "systemPage") && slug.current == $slug && language == $locale][0] {
-    _type,
-    title,
-    content,
-    language,
-    sections[] {
+  // Query s posilneným načítaním globálnych nastavení pre mapu
+  const query = `{
+    "page": *[(_type == "singlePage" || _type == "systemPage") && slug.current == $slug && language == $locale][0] {
       _type,
-      text,
-      "imageUrl": image.asset->url,
-      questions[] { question, answer },
       title,
-      description,
-      layout 
+      content,
+      language,
+      sections[] {
+        _type,
+        text,
+        "imageUrl": image.asset->url,
+        questions[] { question, answer },
+        title,
+        description,
+        layout 
+      },
     },
+    "translations": *[_type == "translation.metadata" && references(*[slug.current == $slug]._id)][0].translations[]{
+      "slug": value->slug.current,
+      "locale": value->language
+    },
+    "settings": *[_type == "settings" && language == $locale][0] {
+      contactDetails { mapEmbed }
+    }
   }`;
 
-  const data: PageData | null = await client.fetch(query, { slug, locale });
+  const { page, settings } = await client.fetch(query, { slug, locale });
 
-  if (!data) notFound();
+  if (!page) notFound();
 
-  // ŠABLÓNA 1: TEXTOVÁ (GDPR, atď.)
-  if (data._type === 'systemPage') {
+  // ŠABLÓNA 1: SYSTÉMOVÁ (GDPR, podmienky...)
+  if (page._type === 'systemPage') {
     return (
       <div className="max-w-4xl mx-auto px-6 py-20">
         <div className="prose prose-lg prose-slate max-w-none">
-          <h1 className="text-4xl font-bold mb-10">{data.title}</h1>
-          <PortableText value={data.content || []} />
+          <h1 className="text-4xl font-bold mb-10">{page.title}</h1>
+          <PortableText value={page.content || []} />
         </div>
       </div>
     );
   }
 
-  // ŠABLÓNA 2: FLEXIBILNÁ (Landing Pages)
+  // ŠABLÓNA 2: LANDING PAGE
   return (
     <div className="max-w-5xl mx-auto px-6">
       <div className="flex flex-col gap-24 py-12">
-        {data.sections?.map((section, index) => {
-          
-          // --- HERO SEKČIA ---
-          if (section._type === 'heroSection') {
-            return (
-              <section key={index} className="grid md:grid-cols-2 gap-12 items-center">
+        {page.sections?.map((section: any, index: number) => (
+          <div key={index}>
+            {/* HERO SECTION */}
+            {section._type === 'heroSection' && (
+              <section className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-2xl text-slate-700 leading-relaxed italic border-l-4 border-blue-500 pl-8">
                   {section.text}
                 </div>
                 {section.imageUrl && (
-                  <img 
-                    src={section.imageUrl} 
-                    className="rounded-3xl shadow-xl object-cover aspect-square" 
-                    alt={data.title} 
-                  />
+                  <img src={section.imageUrl} className="rounded-3xl shadow-xl object-cover aspect-square" alt={page.title} />
                 )}
               </section>
-            );
-          }
+            )}
 
-          // --- FAQ SEKČIA ---
-          if (section._type === 'faqSection') {
-            return <FaqSection key={index} questions={section.questions} />;
-          }
+            {/* FAQ SECTION */}
+            {section._type === 'faqSection' && <FaqSection questions={section.questions} />}
 
-          // --- KONTAKTNÁ SEKČIA ---
-          if (section._type === 'contactSection') {
-            const isWithMap = section.layout === 'withMap';
-            
-            // Jednoduchá lokalizácia statického textu
-            const defaultContactTitle = locale === 'sk' ? 'Napíšte nám' : 'Contact us';
-
-            return (
-              <section key={index} className={`w-full ${isWithMap ? 'max-w-7xl' : 'max-w-3xl'} mx-auto`}>
-                <div className={`grid gap-12 items-stretch ${isWithMap ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
-                  
-                  {isWithMap && (
+            {/* CONTACT SECTION */}
+            {section._type === 'contactSection' && (
+              <section className={`w-full ${section.layout === 'withMap' ? 'max-w-7xl' : 'max-w-3xl'} mx-auto`}>
+                <div className={`grid gap-12 items-stretch ${section.layout === 'withMap' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                  {section.layout === 'withMap' && settings?.contactDetails?.mapEmbed && (
                     <div className="min-h-[400px] bg-slate-100 rounded-3xl overflow-hidden shadow-inner border border-slate-200">
-                      <iframe 
-                        src="https://www.google.com/maps/embed?pb=..." // Sem vlož skutočný embed link
-                        className="w-full h-full border-0 grayscale contrast-125"
-                        allowFullScreen
-                        loading="lazy"
-                      ></iframe>
+                      <div 
+                        className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" 
+                        dangerouslySetInnerHTML={{ __html: settings.contactDetails.mapEmbed }} 
+                      />
                     </div>
                   )}
-
                   <div className="bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-100 shadow-sm">
-                    <div className="mb-10 text-center md:text-left">
+                    <div className="mb-10">
                       <h2 className="text-3xl font-bold text-slate-800 mb-4">
-                        {section.title || defaultContactTitle}
+                        {section.title || (locale === 'sk' ? 'Napíšte nám' : 'Contact us')}
                       </h2>
                       {section.description && <p className="text-slate-600">{section.description}</p>}
                     </div>
@@ -179,11 +172,9 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
                   </div>
                 </div>
               </section>
-            );
-          }
-
-          return null;
-        })}
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
