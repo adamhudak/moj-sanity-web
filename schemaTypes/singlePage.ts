@@ -1,26 +1,30 @@
-export default {
+import { DocumentsIcon, ComposeIcon, HelpCircleIcon, EnvelopeIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+
+export default defineType({
   name: 'singlePage',
   type: 'document',
   title: 'Stránky',
-  // 1. Definujeme skupiny pre lepšiu prehľadnosť
+  icon: DocumentsIcon,
   groups: [
     { name: 'content', title: 'Obsah stránky' },
     { name: 'seo', title: 'SEO nastavenia' },
   ],
   fields: [
-    {
+    defineField({
       name: 'language',
       type: 'string',
       readOnly: true,
-      // hidden: true, // Ak to nechceš vidieť v editore
-    },
-    { 
+      hidden: true,
+    }),
+    defineField({ 
       name: 'title', 
       type: 'string', 
       title: 'Nadpis stránky',
-      group: 'content' // Priradíme do skupiny Obsah
-    },
-    {
+      group: 'content',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'slug',
       type: 'slug',
       title: 'URL adresa',
@@ -28,9 +32,10 @@ export default {
         source: 'title',
         maxLength: 96,
       },
-      group: 'content'
-    },
-    {
+      group: 'content',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'sections',
       type: 'array',
       title: 'Sekcie stránky',
@@ -40,19 +45,34 @@ export default {
           type: 'object',
           name: 'heroSection',
           title: 'Úvodná sekcia (Obrázok + Text)',
+          icon: ComposeIcon, // Pridaná ikona
           fields: [
-            { name: 'image', type: 'image', title: 'Obrázok' },
+            { name: 'image', type: 'image', title: 'Obrázok', options: { hotspot: true } },
             { name: 'text', type: 'text', title: 'Text' }
-          ]
+          ],
+          preview: {
+            select: { title: 'text', media: 'image' },
+            prepare({ title, media }) {
+              return { title: title || 'Hero Sekcia', subtitle: 'Hero', media }
+            }
+          }
         },
         {
           type: 'object',
           name: 'faqSection',
           title: 'Akordeón (FAQ)',
+          icon: HelpCircleIcon,
           fields: [
+            { 
+              name: 'title', 
+              type: 'string', 
+              title: 'Nadpis sekcie', 
+              initialValue: 'Časté otázky' 
+            },
             {
               name: 'questions',
               type: 'array',
+              title: 'Otázky a odpovede',
               of: [{
                 type: 'object',
                 fields: [
@@ -61,15 +81,27 @@ export default {
                 ]
               }]
             }
-          ]
+          ],
+          preview: {
+            select: { 
+              title: 'title', 
+              questions: 'questions' 
+            },
+            prepare({ title, questions }) {
+              return { 
+                title: title || 'FAQ Sekcia', 
+                subtitle: `${questions?.length || 0} (počet otázok)` 
+              }
+            }
+          }
         },
         {
           type: 'object',
           name: 'contactSection',
           title: 'Kontaktný formulár',
+          icon: EnvelopeIcon, // Pridaná ikona
           fields: [
-
-             {
+            {
               name: 'layout',
               title: 'Typ rozloženia (Šablóna)',
               type: 'string',
@@ -81,48 +113,52 @@ export default {
                 ],
                 layout: 'radio', 
               },
-              
             },
-            { 
-              name: 'title', 
-              type: 'string', 
-              title: 'Nadpis sekcie', 
-              initialValue: 'Napíšte nám' 
-            },
-            { 
-              name: 'description', 
-              type: 'text', 
-              title: 'Krátky text nad formulárom' 
-            },
-           
-
+            { name: 'title', type: 'string', title: 'Nadpis sekcie', initialValue: 'Napíšte nám' },
+            { name: 'description', type: 'text', title: 'Krátky text nad formulárom' },
           ],
+          preview: {
+            select: { title: 'title', layout: 'layout' },
+            prepare({ title, layout }) {
+              return { title: title || 'Kontakt', subtitle: `Layout: ${layout}` }
+            }
+          }
         },
       ]
-    },
-
+    }),
     
     // --- SEO POLIA ---
-    {
+    defineField({
       name: 'seoTitle',
       type: 'string',
       title: 'SEO Nadpis (Meta Title)',
-      description: 'Zobrazuje sa v záložke prehliadača (ideálne do 60 znakov).',
-      group: 'seo' // Priradíme do skupiny SEO
-    },
-    {
+      group: 'seo'
+    }),
+    defineField({
       name: 'seoDescription',
       type: 'text',
       title: 'SEO Popis (Meta Description)',
-      description: 'Krátky popis pre Google (ideálne 150-160 znakov).',
       group: 'seo'
-    },
-    {
+    }),
+    defineField({
       name: 'seoImage',
       type: 'image',
       title: 'SEO Obrázok',
-      description: 'Obrázok, ktorý sa zobrazí pri zdieľaní na Facebooku/Instagrame.',
       group: 'seo'
+    })
+  ],
+  // Vylepšený náhľad v zozname stránok
+  preview: {
+    select: {
+      title: 'title',
+      slug: 'slug.current',
+      language: 'language'
+    },
+    prepare({ title, slug, language }) {
+      return {
+        title: title || 'Bez názvu',
+        subtitle: `${language?.toUpperCase() || '--'} | /${slug || ''}`
+      }
     }
-  ]
-}
+  }
+})

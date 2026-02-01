@@ -1,20 +1,33 @@
-export default {
+import { DocumentTextIcon } from '@sanity/icons'
+import { defineField, defineType } from 'sanity'
+
+export default defineType({
   name: 'systemPage',
   type: 'document',
   title: 'Podstránky',
+  icon: DocumentTextIcon,
+  groups: [
+    { name: 'content', title: 'Obsah' },
+    { name: 'seo', title: 'SEO' },
+  ],
   fields: [
-    {
+    // 1. POLE PRE JAZYK
+    defineField({
       name: 'language',
       type: 'string',
       readOnly: true,
-      // hidden: true, // Ak to nechceš vidieť v editore
-    },
-    { 
+      hidden: true,
+    }),
+
+    // --- OBSAH ---
+    defineField({ 
       name: 'title', 
       type: 'string', 
-      title: 'Názov stránky (napr. GDPR)' 
-    },
-    {
+      title: 'Názov stránky (napr. GDPR)',
+      group: 'content',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'slug',
       type: 'slug',
       title: 'URL adresa',
@@ -22,32 +35,48 @@ export default {
         source: 'title', 
         maxLength: 96,
       },
-    },
-   {
+      group: 'content',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'content',
       type: 'array',
       title: 'Obsah stránky',
+      group: 'content',
       of: [{ type: 'block' }] 
-    },
+    }),
 
-    // --- SEO SEKCIA ---
-    {
+    // --- SEO ---
+    defineField({
       name: 'seoTitle',
       type: 'string',
       title: 'SEO Nadpis',
-      description: 'Zobrazuje sa v záložke prehliadača a vo vyhľadávačoch (ideálne do 60 znakov).',
-    },
-    {
+      group: 'seo',
+    }),
+    defineField({
       name: 'seoDescription',
       type: 'text',
       title: 'SEO Popis',
-      description: 'Krátky popis stránky pre Google (ideálne 150-160 znakov).',
-    },
-    {
+      group: 'seo',
+    }),
+    defineField({
       name: 'seoImage',
       type: 'image',
       title: 'SEO Obrázok',
-      description: 'Obrázok, ktorý sa zobrazí pri zdieľaní na sociálnych sieťach.',
+      group: 'seo',
+    })
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      slug: 'slug.current',
+      language: 'language'
+    },
+    prepare({ title, slug, language }) {
+      return {
+        title: title || 'Bez názvu',
+        subtitle: `${language?.toUpperCase() || '--'} | /${slug || ''}`
+      }
     }
-  ]
-}
+  }
+})

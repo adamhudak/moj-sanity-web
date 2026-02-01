@@ -23,6 +23,7 @@ interface HeroSection {
 }
 
 interface FaqSectionType {
+  title?: string; 
   _type: 'faqSection';
   questions?: { question: string; answer: string }[];
 }
@@ -147,7 +148,8 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
             )}
 
             {/* FAQ SECTION */}
-            {section._type === 'faqSection' && <FaqSection questions={section.questions} />}
+            {section._type === 'faqSection' && <FaqSection title={section.title} questions={section.questions} />}
+            
 
             {/* CONTACT SECTION */}
             {section._type === 'contactSection' && (

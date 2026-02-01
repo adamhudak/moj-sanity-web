@@ -18,20 +18,15 @@ export default function Navigation({ menuItems }: { menuItems: MenuItem[] }) {
   const currentLocale = (params.locale as string) || "sk";
   const currentSlug = params.slug as string;
 
-  // Stav pre uloženie preloženého slugu
   const [translatedSlug, setTranslatedSlug] = useState<string | null>(null);
 
-  // 1. Zisťovanie prekladu slugu zo Sanity
   useEffect(() => {
     async function fetchTranslation() {
       if (!currentSlug) {
         setTranslatedSlug(null);
         return;
       }
-
       const targetLocale = currentLocale === "sk" ? "en" : "sk";
-
-      // Query hľadá metadata, ktoré referencujú aktuálny dokument a vytiahne slug pre druhý jazyk
       const query = `*[_type == "translation.metadata" && references(*[slug.current == $currentSlug]._id)][0].translations[value->language == $targetLocale][0]{
         "slug": value->slug.current
       }`;
@@ -43,42 +38,42 @@ export default function Navigation({ menuItems }: { menuItems: MenuItem[] }) {
         console.error("Chyba pri hľadaní prekladu slugu:", error);
       }
     }
-
     fetchTranslation();
   }, [currentSlug, currentLocale]);
 
   if (isStudio) return null;
 
-  // 2. Vylepšená funkcia na vygenerovanie novej URL
+  // 1. OPRAVENÁ FUNKCIA PRE LINKY BEZ /SK
   const getTranslatablePath = (newLocale: string) => {
-    if (newLocale === currentLocale) return pathname;
-
-    // Ak sme na detailnej stránke a máme preklad slugu
+    // Ak prepíname na SK, výsledná URL nesmie mať prefix
+    const prefix = newLocale === "sk" ? "" : `/${newLocale}`;
+    
     if (currentSlug && translatedSlug) {
-      return `/${newLocale}/${translatedSlug}`;
+      return `${prefix}/${translatedSlug}`;
     }
-
-    // Ak sme na detaile, ale preklad nemá iný slug (alebo ešte nie je načítaný)
     if (currentSlug) {
-      return `/${newLocale}/${currentSlug}`;
+      return `${prefix}/${currentSlug}`;
     }
-
-    // Ak sme na domovskej stránke (napr. /sk -> /en)
-    return `/${newLocale}`;
+    return prefix || "/";
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-100">
       <nav className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href={`/${currentLocale}`} className="font-black text-xl text-slate-900 tracking-tighter">
+        {/* LOGO: Opravené na / alebo /en */}
+        <Link href={currentLocale === "sk" ? "/" : "/en"} className="font-black text-xl text-slate-900 tracking-tighter">
           MOJ<span className="text-blue-600">WEB.</span>
         </Link>
         
         <div className="flex gap-8 items-center">
-          {/* Dynamické menu */}
+          {/* DYNAMICKÉ MENU */}
           {menuItems?.map((item) => {
-            const href = `/${currentLocale}/${item.slug}`;
-            const isActive = pathname === href;
+            // Generovanie href bez /sk
+            const href = currentLocale === "sk" ? `/${item.slug}` : `/en/${item.slug}`;
+            
+            // Aktívny stav - musíme porovnávať s pathname, ale pozor na to, že pathname môže byť /sk/nieco (pred redirectom)
+            // Najistejšie je porovnať slug
+            const isActive = currentSlug === item.slug;
 
             return (
               <Link 

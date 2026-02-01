@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation'; // Pridané pre zistenie jazyka
+import { useParams } from 'next/navigation';
 
 interface FooterProps {
   settings: any;
@@ -9,7 +9,7 @@ interface FooterProps {
 
 export default function Footer({ settings }: FooterProps) {
   const params = useParams();
-  const locale = params?.locale || 'sk'; // Získame 'sk' alebo 'en'
+  const locale = (params?.locale as string) || 'sk';
 
   if (!settings) {
     return (
@@ -44,32 +44,39 @@ export default function Footer({ settings }: FooterProps) {
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
         
-        {/* 1. Identita */}
+        {/* 1. Identita - Opravený odkaz na domov */}
         <div className="flex flex-col gap-3">
-          {settings.logoDark ? (
-            <img src={settings.logoDark} alt={settings.siteTitle} className="h-8 w-fit object-contain" />
-          ) : (
-            <span className="font-bold text-xl tracking-tighter">{settings.siteTitle}</span>
-          )}
+          <Link href={locale === 'sk' ? '/' : '/en'}>
+            {settings.logoDark ? (
+              <img src={settings.logoDark} alt={settings.siteTitle} className="h-8 w-fit object-contain" />
+            ) : (
+              <span className="font-bold text-xl tracking-tighter">{settings.siteTitle}</span>
+            )}
+          </Link>
           <p className="text-xs text-slate-500 leading-relaxed">
             {t.tagline}
           </p>
         </div>
 
-        {/* 2. Footer Menu - OPRAVENÉ ODKAZY */}
+        {/* 2. Footer Menu - OPRAVENÉ ODKAZY BEZ /SK */}
         <div>
           <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-wider">{t.navigation}</h4>
           <ul className="flex flex-col gap-2">
-            {settings.footerMenuItems?.map((item: any, index: number) => (
-              <li key={index}>
-                <Link 
-                  href={`/${locale}/${item.slug || ''}`} // Pridané locale do cesty
-                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {settings.footerMenuItems?.map((item: any, index: number) => {
+              // Dynamická URL: Pre SK bez prefixu, pre EN s prefixom
+              const href = locale === 'sk' ? `/${item.slug || ''}` : `/en/${item.slug || ''}`;
+              
+              return (
+                <li key={index}>
+                  <Link 
+                    href={href}
+                    className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 

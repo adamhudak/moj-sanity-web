@@ -6,7 +6,6 @@ export const settingsType = defineType({
   title: 'Nastavenia webu',
   type: 'document',
   icon: CogIcon,
-  // 1. DEFINUJEME SKUPINY (TABY)
   groups: [
     { name: 'identity', title: 'Identita' },
     { name: 'navigation', title: 'Menu' },
@@ -16,6 +15,14 @@ export const settingsType = defineType({
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
+    // 1. POLE PRE JAZYK (Povinné pre správne fungovanie prekladov)
+    defineField({
+      name: 'language',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+    }),
+
     // --- IDENTITY SEKCIU ---
     defineField({
       name: 'siteTitle',
@@ -50,7 +57,16 @@ export const settingsType = defineType({
               name: 'link', 
               title: 'Cesta (Slug)', 
               type: 'reference', 
-              to: [{ type: 'singlePage' }, { type: 'systemPage' }] 
+              to: [{ type: 'singlePage' }, { type: 'systemPage' }],
+              options: {
+                filter: ({ document }) => {
+                  const lang = (document as any).language;
+                  return {
+                    filter: 'language == $lang',
+                    params: { lang }
+                  }
+                }
+              }
             },
           ],
           preview: {
@@ -80,7 +96,20 @@ export const settingsType = defineType({
           type: 'object',
           fields: [
             { name: 'label', title: 'Názov', type: 'string' },
-            { name: 'link', type: 'reference', to: [{ type: 'singlePage' }, { type: 'systemPage' }] },
+            { 
+              name: 'link', 
+              type: 'reference', 
+              to: [{ type: 'singlePage' }, { type: 'systemPage' }],
+              options: {
+                filter: ({ document }) => {
+                  const lang = (document as any).language;
+                  return {
+                    filter: 'language == $lang',
+                    params: { lang }
+                  }
+                }
+              }
+            },
           ],
           preview: {
             select: { title: 'label', subtitle: 'link.slug.current' },
