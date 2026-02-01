@@ -1,4 +1,4 @@
-import { DocumentsIcon, ComposeIcon, HelpCircleIcon, EnvelopeIcon } from '@sanity/icons'
+import { DocumentsIcon, ComposeIcon, HelpCircleIcon, EnvelopeIcon, ImagesIcon } from '@sanity/icons'
 import { defineField, defineType } from 'sanity'
 
 export default defineType({
@@ -91,6 +91,52 @@ export default defineType({
               return { 
                 title: title || 'FAQ Sekcia', 
                 subtitle: `${questions?.length || 0} (počet otázok)` 
+              }
+            }
+          }
+        },
+        // --- NOVÁ SEKCE: CAROUSEL ---
+        {
+          type: 'object',
+          name: 'carouselSection',
+          title: 'Carousel (Slider)',
+          icon: ImagesIcon,
+          fields: [
+            { 
+              name: 'title', 
+              type: 'string', 
+              title: 'Nadpis sekcie', 
+              description: 'Napr. Naše referencie alebo Naše služby' 
+            },
+            {
+              name: 'items',
+              type: 'array',
+              title: 'Položky slideru',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    { name: 'image', type: 'image', title: 'Obrázok', options: { hotspot: true } },
+                    { name: 'title', type: 'string', title: 'Nadpis karty' },
+                    { name: 'description', type: 'text', title: 'Krátky popis' },
+                  ],
+                  preview: {
+                    select: { title: 'title', media: 'image' },
+                    prepare({ title, media }) {
+                      return { title: title || 'Bez názvu', media }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          preview: {
+            select: { title: 'title', items: 'items' },
+            prepare({ title, items }) {
+              return { 
+                title: title || 'Carousel', 
+                subtitle: `Slider s ${items?.length || 0} položkami`,
+                media: ImagesIcon 
               }
             }
           }

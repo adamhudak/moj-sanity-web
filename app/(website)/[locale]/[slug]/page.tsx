@@ -5,8 +5,19 @@ import type { PortableTextBlock } from "@portabletext/types";
 import ContactForm from "../../../components/ContactForm";
 import { Metadata } from 'next';
 import FaqSection from "../../../components/FaqSection";
+import CarouselBlok from "../../../components/CarouselBlok";
 
 export const dynamic = 'force-dynamic';
+
+interface CarouselSectionType {
+  _type: 'carouselSection';
+  title?: string;
+  items?: {
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+  }[];
+}
 
 // --- TYPY (nechávam tvoje, sú super) ---
 interface ContactSection {
@@ -28,7 +39,7 @@ interface FaqSectionType {
   questions?: { question: string; answer: string }[];
 }
 
-type Section = HeroSection | FaqSectionType | ContactSection;
+type Section = HeroSection | FaqSectionType | ContactSection | CarouselSectionType;
 
 interface PageData {
   _type: 'singlePage' | 'systemPage';
@@ -101,7 +112,13 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
         questions[] { question, answer },
         title,
         description,
-        layout 
+        layout,
+
+        items[] {
+          title,
+          description,
+          "imageUrl": image.asset->url
+        }
       },
     },
     "translations": *[_type == "translation.metadata" && references(*[slug.current == $slug]._id)][0].translations[]{
@@ -135,6 +152,9 @@ export default async function DynamicPage(props: { params: Promise<{ slug: strin
       <div className="flex flex-col gap-24 py-12">
         {page.sections?.map((section: any, index: number) => (
           <div key={index}>
+            {section._type === 'carouselSection' && (
+              <CarouselBlok title={section.title} items={section.items} />
+            )}
             {/* HERO SECTION */}
             {section._type === 'heroSection' && (
               <section className="grid md:grid-cols-2 gap-12 items-center">
